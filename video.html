@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+	<style>
+		*{margin: 0;padding: 0;}
+		figcaption{text-align: center;line-height: 150px;}
+		.player{
+			width: 720px;
+			height: 380px;
+			margin: 0 auto;
+			position: relative;
+
+		}
+		
+		.player .switch{
+			position: absolute;
+			left: 10px;
+			color: #000000;
+			text-decoration: none;
+			bottom: 0;
+			z-index: 99;
+			line-height: 30px;
+		}
+		.player .control{
+			width: 90%;
+			height: 30px;
+			background: rgba(255,255,255,0.3);
+			position: absolute;
+			left: 15px;
+			bottom: 5px;
+			border-radius: 5px;
+			display: none;
+
+		}
+		.player .control .process{
+			width: 300px;
+			height: 10px;
+			background: rgba(255,255,255,0.3);
+			position: absolute;
+			left: 30px;
+			top: 10px;
+			border-radius: 3px;
+		}
+		.player .control .process .current-process{
+			height: 10px;
+			width: 0%;
+			background: rgba(255,255,255,1);
+			border-radius: 3px;
+		}
+		.player .control .exten{
+			position: absolute;
+			right: 20px;
+			top: 8px;
+
+		}
+
+		.player .control .rate{
+			position: absolute;
+			left: 340px;
+			top: 5px;
+		}
+		.player .control .rate span{
+			margin-left: 2px;
+		}
+		.player video{
+			height: 100%;
+
+		}
+
+		.player .control .time{
+			position: absolute;
+			right: 50px;
+			top: 5px;
+		}
+	</style>
+</head>
+<body>
+		<figure>
+			<figcaption>视频</figcaption>
+			<div class='player'>
+				<video src="./fun.mp4"></video>
+				<div class='control'>
+					<a href="javascript:void(0)" class='switch fa fa-play' aria-hidden="true"></a>
+					<div class="process">
+						<div class="current-process"></div>
+					</div>
+					<div class="rate">
+						<span class="fa fa-fast-backward rateDiv" aria-hidden="true"></span>
+						<span class="fa fa-fast-forward rateAdd " aria-hidden="true"></span>
+						<span class="fa fa-audio-description audioStop" aria-hidden="true"></span>
+						<span class="fa fa-file-audio-o volumeAdd" aria-hidden="true"></span>
+						<span class="fa fa-file-audio-o volumeDiv" aria-hidden="true"></span>
+					</div>
+					<div class="time">
+						<span class='current-time'>00:00:00</span>/
+						<span class='total-time'>00:00:00</span>
+					</div>
+					<span class="exten fa fa-expand" aria-hidden="true"></span>
+				</div>	
+			</div>
+		</figure>
+	
+</body>
+</html>
+
+<script>
+	var play = document.querySelector(".switch");
+	var control = document.querySelector(".control");
+	var player = document.querySelector(".player");
+	var fullScreen = document.querySelector(".exten");
+	var currentTime = document.querySelector(".current-time");
+	var totalTime = document.querySelector(".total-time");
+	var currentProcess = document.querySelector(".current-process");
+	var video = document.querySelector("video");
+	var rateAdd = document.querySelector(".rateAdd");
+	var rateDiv = document.querySelector(".rateDiv");
+	var audioStop = document.querySelector(".audioStop");
+	var volumeAdd = document.querySelector(".volumeAdd");
+	var volumeDiv = document.querySelector(".volumeDiv");
+
+	play.onclick = function () {
+
+			if (video.paused) {
+				video.play();
+				this.classList.remove("fa-play");
+				this.classList.add("fa-pause");
+			}else{
+				video.pause();
+				this.classList.remove("fa-pause");
+				this.classList.add("fa-play");
+			}
+			
+	}
+	player.onmousemove = function () {
+		control.style.display = 'block';
+	}
+	player.onmouseout = function () {
+		control.style.display = 'none';
+	}
+
+	audioStop.onclick = function () {
+		if (video.muted) {
+			video.muted = false;
+		}else {
+			video.muted = true;
+		}
+	}
+	stop.onclick = function () {
+		video.pause();
+		play.classList.remove("fa-pause");
+		play.classList.add("fa-play");
+
+	}
+		var totaTime = curTime = undefined;
+		video.oncanplay = function () {
+			totaTime = this.duration;
+			//获取总时长
+			var totalObj = toTime(totaTime);
+
+			totalTime.innerHTML = totalObj.h+":"+ totalObj.m +":"+ totalObj.s;
+		}
+
+		rateAdd.onclick = function () {
+			if (video.playbackRate !== 0 && this.playbackRate !== 5) {
+					video.playbackRate ++;
+			}else{
+				video.playbackRate = 5;
+				video.play();
+			}
+		}
+
+		rateDiv.onclick = function () {
+			if (video.playbackRate < 0) {
+					video.playbackRate = 0;
+					video.play();
+			}else{
+				video.playbackRate --;
+			}
+		}
+
+		volumeAdd.onclick = function () {
+			document.body.style.background = '#fff';
+			if (video.volume === 1) {
+				video.volume = 1;
+				video.play();
+			}else {
+				video.volume += 0.1;
+			}
+		}
+
+		volumeDiv.onclick = function () {
+			document.body.style.background = '#000';
+			if (video.volume === 0) {
+				video.volume = 0;
+				video.play();
+			}else {
+				video.volume -= 0.1;
+			}
+		}
+
+		video.ontimeupdate = function () {
+			if (video.playbackRate === 0) {
+				video.playbackRate = 1;
+				video.play();
+			}
+			curTime = video.currentTime;
+			this.draggable = false;
+			this.volume = 0.1;
+			var curObj = toTime(curTime);
+
+			currentTime.innerHTML = curObj.h+":"+ curObj.m +":"+ curObj.s;
+
+			currentProcess.style.width = (curTime / totaTime)*100 +'%';
+
+			if (curTime === totaTime) {
+				play.classList.remove("fa-pause");
+				play.classList.add("fa-play");
+				video.playbackRate =1;
+			}
+
+		}
+
+		function toTime(curTime) {
+			var timeObj = {};
+			timeObj.h = Math.floor(curTime / 3600);
+			timeObj.m = Math.floor(curTime % 3600 / 60);
+			timeObj.s = Math.floor(curTime % 60);
+
+			timeObj.h = timeObj.h >= 10 ? timeObj.h : "0" + timeObj.h;
+			timeObj.m = timeObj.m >= 10 ? timeObj.m : "0" + timeObj.m;
+			timeObj.s = timeObj.s >= 10 ? timeObj.s : "0" + timeObj.s;
+			return timeObj;
+		}
+
+	fullScreen.onclick = function () {
+		video.webkitRequestFullscreen();
+	}
+
+
+	document.onkeydown = function (e) {
+		console.log(e)
+		if (e.keycode === 13) {
+			video.play();
+		}
+	}
+
+</script>
